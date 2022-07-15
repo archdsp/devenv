@@ -1,7 +1,7 @@
 [user]
     email = jisuchoi01@gmail.com
     name = jisu choi
-    signKey = 9DF07E25EDDD1277F38B52954534AF151D8D70F5
+    signingKey = 9DF07E25EDDD1277F38B52954534AF151D8D70F5
 [credential]
     helpergit = credential
     helper = store
@@ -18,7 +18,7 @@
 [rerere]
     enabled = true
 [commit]
-    gpgsign = true
+	gpgsign = true
     template = ~/.gitmessage
 [gpg]
-    program = gpg
+	program = /usr/bin/gpg
