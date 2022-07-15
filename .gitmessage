@@ -1,0 +1,37 @@
+# Title: Summary, Briefly
+# No more than 50 chars. #### 50 chars is here:  #
+# Format : `<type> : title`
+# Ex. `FIX : Fix error on something blah
+# Type candidate
+# Fix
+# Hack
+# Refactor
+# Style
+# Docs
+# Test : No production code change, Only add test case.
+# Chore : ETC Task, No production code changed
+Type : Title
+
+# Blank line between title and body.
+
+# Body: Explain *what* and *why* (not *how*). Include task ID
+# Wrap at 72 chars. ################################## which is here:  #
+Description
+Fix
++
+-
+
+Refactor
++
+-
+
+How to test
+
+Reference(Optional)
+
+# Include CO-authored-by for all contributors. 
+# Include at least one empty line before it. Format: 
+# CO-authored-by: name <user@users.noreply.github.com>
+CO-author
+
+# Blank line for commit hook
