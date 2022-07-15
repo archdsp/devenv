@@ -155,16 +155,6 @@
 			(local-unset-key (kbd "C-c C-k"))
 			))
 
-(add-hook 'c-mode-hook
-          (lambda()
-			(local-unset-key (kbd "C-c C-l"))
-			))
-
-(add-hook 'c++-mode-hook
-          (lambda()
-			(local-unset-key (kbd "C-c C-l"))
-			))
-
 ; input method : set default input method as hangul
 (set-input-method "korean-hangul")
 
@@ -181,7 +171,7 @@
 (require 'package)
 (setq package-enable-at-startup t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.kmilkbox.net/packages/") t)
 (package-initialize)
 
 ;;; 커스텀 모듈 로드 ;;;
@@ -445,25 +435,3 @@ If the new path's directories does not exist, create them."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "나눔고딕코딩" :foundry "SAND" :slant normal :weight normal :height 141 :width normal)))))
-
-(require 'auto-complete)
-(require 'auto-complete-config)
-(require 'auto-complete-c-headers)
-(ac-config-default)
-(define-key ac-completing-map (kbd "M-i") 'ac-previous)
-(define-key ac-completing-map (kbd "M-k") 'ac-next)
-(define-key ac-mode-map (kbd "C-@") 'auto-complete)
-
-;; C mode
-(add-hook 'c-mode-hook '(lambda ()
-					 	(add-to-list 'ac-sources 'ac-source-words-in-same-mode-buffers)
-						(add-to-list 'ac-sources 'ac-source-semantic-raw)
-						(add-to-list 'ac-sources 'ac-source-c-headers)
-						(add-to-list 'ac-sources 'ac-source-semantic)
-						))
-
-
-;; Jedi Mode
-(add-hook 'python-mode-hook 'jedi:setup)
-(add-hook 'anaconda-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)
