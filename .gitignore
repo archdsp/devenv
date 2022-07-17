@@ -5,6 +5,7 @@
 !.bash_profile
 !.bash_alias
 !.bashrc
+!.bash_logout
 
 !.gitignore
 !.git-templates
