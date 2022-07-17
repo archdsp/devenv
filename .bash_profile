@@ -29,7 +29,6 @@ function set_git()
 
 function set_gpg()
 {
-    export GPG_TTY=$(tty)
     gpg --import ~/.gnupg/public_jisu.pgp
     gpg --import ~/.gnupg/private_jisu.pgp
 
@@ -47,6 +46,8 @@ function myhelp()
 {
     echo "myclip, set_gpg, set_git, set_packages available"
 }
+
+export GPG_TTY=$(tty)
 
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
