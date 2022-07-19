@@ -13,6 +13,7 @@
     notesRef = true
 [alias]
     lg = log --graph --decorate=full --notes --oneline --all --show-signature
+    lg = log -n5 --all --graph --pretty="%C(reverse)%C(yellow)%h%C(cyan)%d%C(blue)[%G?]%C(white)%s%n%C(white)%C(dim)%cr%ce"
 [init]
     templateDir = ~/.git-templates
 [rerere]
