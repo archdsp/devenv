@@ -8,7 +8,11 @@ function set_packages()
     cmds=([git]="git" [gpg]="gnupg" [scrot]="scrot" [xclip]="xclip" [glow]="glow")
     for cmd in "${!cmds[@]}"; do
         if [ -z "$(type -all $cmd)" ]; then
-            yay -Syu ${!cmds[$cmd]}
+            if [ $cmd == 'glow' ]; then
+                echo 'deb [trusted=yes] https://repo.charm.sh/apt/ /' | sudo tee /etc/apt/sources.list.d/charm.list
+                sudo apt update && sudo apt install glow
+            fi
+            sudo apt-get -y install ${!cmds[$cmd]}
         else
             echo $cmd commad exist. Package ${!cmds[$cmd]} is intalled
         fi
@@ -29,10 +33,16 @@ function set_git()
 
 function set_gpg()
 {
-    gpg --import ~/.gnupg/public_jisu.pgp
-    gpg --import ~/.gnupg/private_jisu.pgp
+    if [ -f "~/.gnupg/public_jisu.pgp" ];then
+        gpg --import ~/.gnupg/public_jisu.pgp
+    else
+        gpg --auto-key-locate $1 --locate-keys $2
+    fi
 
-    git config --global user.signKey `gpg --list-key | awk 'FNR == 4 {gsub(/ /,"");print}'`
+    if [ -f "~/.gnupg/private_jisu.pgp" ];then
+        gpg --import ~/.gnupg/private_jisu.pgp
+        git config --global user.signKey `gpg --list-key | awk 'FNR == 4 {gsub(/ /,"");print}'`
+    fi
 }
 
 function myclip()
@@ -48,7 +58,7 @@ function myhelp()
 }
 
 export GPG_TTY=$(tty)
-
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QR_IM_MODULE=ibus
