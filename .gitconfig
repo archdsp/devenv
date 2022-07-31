@@ -9,7 +9,6 @@
     useHttpPath = true
 [core]
     editor = vim
-    autocrlf = true
     notesRef = true
     fsmonitor = true
 [alias]

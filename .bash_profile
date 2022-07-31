@@ -27,8 +27,10 @@ function set_git()
 
     git config --global init.templateDir ~/.git-templates
 
-    source /usr/share/git/completion/git-completion.bash
-    source /usr/share/git/completion/git-prompt.sh
+    if [ -f  '/usr/share/git/completion/git-completion.bash' ]; then
+        source /usr/share/git/completion/git-completion.bash
+        source /usr/share/git/completion/git-prompt.sh
+    fi
 }
 
 function set_gpg()
