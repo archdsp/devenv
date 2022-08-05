@@ -4,17 +4,35 @@
 
 function set_packages()
 {
+    . /etc/os-release
+
+    unset distro_pkgmgr
+    unset cmds
+    declare -A distro_pkgmgr
     declare -A cmds
-    cmds=([git]="git" [gpg]="gnupg" [scrot]="scrot" [xclip]="xclip" [glow]="glow")
+
+    distro_pkgmgr=([arch]='pacman -Syu' [ubuntu]='apt install -y')
+    pkgmgr="sudo `echo ${distro_pkgmgr[$ID]}`"
+
+    cmds=( \
+        [git]="git=${pkgmgr} git" \
+        [gpg]="gnupg=${pkgmgr} gnupg" \
+        [scrot]="scrot=${pkgmgr} scrot" \
+        [xclip]="xclip=${pkgmgr} xclip" \
+        [glow]="glow=echo 'deb [trusted=yes] https://repo.charm.sh/apt/ /' | 
+                     sudo tee /etc/apt/sources.list.d/charm.list;
+                     sudo apt-get -y install" \
+        )
+
     for cmd in "${!cmds[@]}"; do
         if [ -z "$(type -all $cmd)" ]; then
-            if [ $cmd == 'glow' ]; then
-                echo 'deb [trusted=yes] https://repo.charm.sh/apt/ /' | sudo tee /etc/apt/sources.list.d/charm.list
-                sudo apt update && sudo apt install glow
-            fi
-            sudo apt-get -y install ${!cmds[$cmd]}
+            record=${cmds[$cmd]}
+            # pkgname=${record%%=*}
+            install_cmd=${record#*=}
+            # echo $pkgname $install_cmd
+            eval $install_cmd
         else
-            echo $cmd commad exist. Package ${!cmds[$cmd]} is intalled
+            echo $cmd command exist.
         fi
     done
 }
