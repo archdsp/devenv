@@ -11,21 +11,25 @@ function set_packages()
     declare -A distro_pkgmgr
     declare -A cmds
 
-    distro_pkgmgr=([arch]='pacman -Syu' [ubuntu]='apt install -y')
-    pkgmgr="sudo `echo ${distro_pkgmgr[$ID]}`"
+    pkgmgr=([arch]='pacman' [ubuntu]='apt')
+    install=([arch]='-Syu' [ubuntu]='-y install')
+    check=([arch]='-Q' [ubuntu]='-qq list')
+
+    pkgmgr_install="sudo `echo ${pkgmgr[$ID]} ${install[$ID]}`"
+    pkgmgr_check="`echo ${pkgmgr[$ID]} ${check[$ID]}`"
 
     cmds=( \
-        [git]="git=${pkgmgr} git" \
-        [gpg]="gnupg=${pkgmgr} gnupg" \
-        [scrot]="scrot=${pkgmgr} scrot" \
-        [xclip]="xclip=${pkgmgr} xclip" \
+        [git]="git=${pkgmgr_install} git" \
+        [gpg]="gnupg=${pkgmgr_install} gnupg" \
+        [scrot]="scrot=${pkgmgr_install} scrot" \
+        [xclip]="xclip=${pkgmgr_install} xclip" \
         [glow]="glow=echo 'deb [trusted=yes] https://repo.charm.sh/apt/ /' | 
                      sudo tee /etc/apt/sources.list.d/charm.list;
                      sudo apt-get -y install" \
         )
 
     for cmd in "${!cmds[@]}"; do
-        if [ -z "$(type -all $cmd)" ]; then
+        if [ -z "$($pkgmgr_check $cmd)" ]; then
             record=${cmds[$cmd]}
             # pkgname=${record%%=*}
             install_cmd=${record#*=}
