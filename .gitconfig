@@ -11,9 +11,22 @@
     editor = vim
     notesRef = true
     fsmonitor = true
+    whitespace = trailing-space
+    tabwidth = 4
+[color]
+	ui = auto
+    branch = auto
+    status = true
+    diff = auto 
+[format]
+    pretty="%C(yellow reverse)%h%C(auto)%d%C(blue reverse)[%G?]%C(white reverse)%s%n%C(dim)%cr/%ce\n%N"
+[pretty]
+    changelog = "format:%cr %h %s"
 [alias]
     lga = log --graph --decorate=full --notes --oneline --all
-    lg = log -n5 --all --graph --pretty="%C(reverse)%C(yellow)%h%C(cyan)%d%C(blue)[%G?]%C(white)%s%n%C(white)%C(dim)%cr%ce"
+    lg = log -n5 --all --graph --decorate=full
+    br = branch -a -l -vv --color=always
+    changelog = log --pretty=changelog
 [init]
 	templateDir = /home/jisu/.git-templates
 [rerere]
@@ -23,3 +36,35 @@
     template = ~/.gitmessage
 [gpg]
     program = /usr/bin/gpg
+[log]
+    decorate = full
+    graphColors = "#457c2f","#5a7f85","#f56038","#f7a325","#ffca7a","#dee0e6","#1ac0c6","#ff6150"
+    showRoot = true
+[status]
+    displayCommentPrefix = true
+    showStash = true
+# Log graph color
+[color "decorate"]
+    branch = cyan black bold reverse
+    remoteBranch = brightblue black bold reverse
+    HEAD = brightgreen black blink reverse
+    stash = brightmagenta black reverse
+[color "status"]
+    branch = green black bold blink
+    localBranch = cyan black bold
+    remoteBranch = blue black bold
+    header = white bold
+    changed = brightyellow black
+    updated = brightyellow
+    added = brightyellow
+    unmerged = magenta
+    untracked = white dim
+[color "branch"]
+    current = green black blink
+    local = cyan black blink
+    remote = blue black bold
+    upstream = yellow black bold
+    plain = white black bold
+[color "diff"]
+	meta = blue black bold
+
