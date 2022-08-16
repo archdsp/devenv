@@ -9,7 +9,6 @@
     useHttpPath = true
 [core]
     editor = vim
-    notesRef = true
     fsmonitor = true
     whitespace = trailing-space
     tabwidth = 4
@@ -19,12 +18,14 @@
     status = true
     diff = auto 
 [format]
-    pretty="%C(yellow reverse)%h%C(auto)%d%C(blue reverse)[%G?]%C(white reverse)%s%n%C(dim)%cr/%ce\n%N"
+    pretty="%C(yellow reverse)%h%C(auto)%d%C(blue reverse)[%G?]%C(white reverse)%s%n%C(dim)%cr/%ce"
 [pretty]
     changelog = "format:%cr %h %s"
+    with-note = "%C(yellow reverse)%h%C(auto)%d%C(blue reverse)[%G?]%C(white reverse)%s%n%C(dim)%cr/%ce\n%N"
 [alias]
     lga = log --graph --decorate=full --notes --oneline --all
-    lg = log -n5 --all --graph --decorate=full
+    lg = log -n15 --all --graph --decorate=full
+    lgn = log -n15 --all --graph --decorate=full --pretty=with-note
     br = branch -a -l -vv --color=always
     changelog = log --pretty=changelog
 [init]
