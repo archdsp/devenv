@@ -87,6 +87,9 @@ export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QR_IM_MODULE=ibus
 
+export GIT_CURL_VERBOSE=1 
+export GIT_TRACE=1
+
 export LANG=ko_KR.UTF-8
 
 # set bell-style none
