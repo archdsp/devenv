@@ -47,6 +47,63 @@ function myhelp()
     echo "myclip, set_gpg, set_git, set_packages available"
 }
 
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+# Console Style Constants
+RST="\[\e[0m\]"           # Reset Styles
+BOLD="\[\e[1m\]"          # Bold
+UL="\[\e[4m\]"            # Underline
+HIGHLIGHT="\[\e[7m\]"            # Highlight (inverse)
+FG_BLACK="\[\e[90m\]"     # Foreground black
+FG_RED="\[\e[91m\]"       # Foreground red
+FG_GREEN="\[\e[92m\]"     # Foreground green
+FG_YELLOW="\[\e[93m\]"    # Foreground yellow
+FG_BLUE="\[\e[94m\]"      # Foreground blue
+FG_MAGENTA="\[\e[95m\]"   # Foreground magenta
+FG_CYAN="\[\e[96m\]"      # Foreground cyan
+FG_WHITE="\[\e[97m\]"     # Foreground white
+BG_BLACK="\[\e[100m\]"    # Background black
+BG_RED="\[\e[101m\]"      # Background red
+BG_GREEN="\[\e[102m\]"    # Background green
+BG_YELLOW="\[\e[103m\]"   # Background yellow
+BG_BLUE="\[\e[104m\]"     # Background blue
+BG_MAGENTA="\[\e[105m\]"  # Background magenta
+BG_CYAN="\[\e[106m\]"     # Background cyan
+BG_WHITE="\[\e[107m\]"    # Background white
+
+if [ "$color_prompt" = yes ]; then
+    TIME="\n${FG_MAGENTA}[\d \t]${RST}"
+    TERM127="`if [ \$? != 0 ]; then echo '${FG_RED}${BOLD}${HIGHLIGHT}!${RST}'; fi`"
+    CWD="${FG_YELLOW}[job]: \j [dir]: \w${RST}${debian_chroot:+($debian_chroot)}"
+    HOST="${FG_GREEN}${BOLD}\u${RST}${FG_WHITE}@${RST}${FG_CYAN}\h${RST}\$"
+    GIT="`__git_ps1`"
+    PS1="${TIME} ${TERM127} ${CWD} ${GIT} \n${HOST} "
+
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+
+unset color_prompt force_color_prompt
+
 export GPG_TTY=$(tty)
 
 export GTK_IM_MODULE=ibus
