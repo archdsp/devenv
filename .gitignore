@@ -13,5 +13,10 @@
 !.gitattributes
 !.gitconfig
 
+!.gnupg/gpg.conf
+!.gnupg/gpg-agent.conf
+
+!.ssh/config
+
 !.emacs
 !.vimrc
