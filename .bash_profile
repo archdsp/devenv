@@ -4,11 +4,32 @@
 
 function set_packages()
 {
+    # Install yay package
     declare -A cmds
-    cmds=([git]="git" [gpg]="gnupg" [scrot]="scrot" [xclip]="xclip" [glow]="glow")
+    cmds=([git]="git" [gpg]="gnupg" [emacs]="emacs")
     for cmd in "${!cmds[@]}"; do
         if [ -z "$(type -all $cmd)" ]; then
-            yay -Syu ${!cmds[$cmd]}
+            echo Trying to install ${cmds[$cmd]}
+            pacman -Syu --noconfirm ${cmds[$cmd]}
+        else
+            echo $cmd commad exist. Package ${cmds[$cmd]} is intalled
+        fi
+    done
+}
+
+function install_yaypkgs()
+{
+    # pacman -S --needed git base-devel
+    # git clone https://aur.archlinux.org/yay-bin.git $HOME/yay-bin
+    # cd yay-bin
+    # makepkg -si    
+    
+    declare -A cmds
+    cmds=([scrot]="scrot" [xclip]="xclip" [glow]="glow")
+    for cmd in "${!cmds[@]}"; do
+        if [[ -z "$(type -all $cmd)" || $?!="0" ]]; then
+            echo Trying to install ${cmds[$cmd]}
+            yay -Syu --noconfirm ${cmds[$cmd]}
         else
             echo $cmd commad exist. Package ${!cmds[$cmd]} is intalled
         fi
@@ -22,9 +43,6 @@ function set_git()
     export GIT_PS1_SHOWCOLORHINTS="true" 
 
     git config --global init.templateDir ~/.git-templates
-
-    source /usr/share/git/completion/git-completion.bash
-    source /usr/share/git/completion/git-prompt.sh
 }
 
 function set_gpg()
@@ -45,6 +63,8 @@ function myclip()
 function myhelp()
 {
     echo "myclip, set_gpg, set_git, set_packages available"
+    echo "First, run set_packages to install vim, emacs, git\n
+    Second, run install_yaypkgs\n"
 }
 
 # set a fancy prompt (non-color, unless we know we "want" color)
@@ -116,4 +136,3 @@ export LANG=ko_KR.UTF-8
 
 [[ -f ~/.bash_aliases ]] &&  . ~/.bash_aliases
 [[ -f ~/.bashrc ]] && . ~/.bashrc
-
