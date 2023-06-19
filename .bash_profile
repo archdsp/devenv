@@ -2,27 +2,50 @@
 # ~/.bash_profile
 #
 
+
 function set_packages()
 {
+    . /etc/os-release
+
     # Install yay package
-    declare -A cmds
-    cmds=([git]="git" [gpg]="gnupg" [emacs]="emacs")
+    unset distro_pkgmgr install cmds check
+    unset cmds
+    declare -A distro_pkgmgr install cmds check
+
+    distro_pkgmgr=([arch]='pacman' [ubuntu]='apt')
+    install=([arch]='-Syu' [ubuntu]='-y install')
+    check=([arch]='-Q' [ubuntu]='-qq list')
+
+    pkgmgr_install="sudo `echo ${distro_pkgmgr[$ID]} ${install[$ID]}`"
+    pkgmgr_check="`echo ${distro_pkgmgr[$ID]} ${check[$ID]}`"
+
+    cmds=( \
+        [git]="git=${pkgmgr_install} git" \
+        [gnupg]="gnupg=${pkgmgr_install} gnupg" \
+        [scrot]="scrot=${pkgmgr_install} scrot" \
+        [xclip]="xclip=${pkgmgr_install} xclip" \
+        )
+
     for cmd in "${!cmds[@]}"; do
-        if [ -z "$(type -all $cmd)" ]; then
-            echo Trying to install ${cmds[$cmd]}
-            pacman -Syu --noconfirm ${cmds[$cmd]}
+        if [ -z "$($pkgmgr_check $cmd)" ]; then
+            record=${cmds[$cmd]}
+            install_cmd=${record#*=}
+            eval $install_cmd
         else
-            echo $cmd commad exist. Package ${cmds[$cmd]} is intalled
+            echo $cmd command exist
         fi
-    done
+    done    
 }
 
 function install_yaypkgs()
 {
-    # pacman -S --needed git base-devel
-    # git clone https://aur.archlinux.org/yay-bin.git $HOME/yay-bin
-    # cd yay-bin
-    # makepkg -si    
+    . /etc/os-release
+
+    pacman -S --needed git base-devel
+    git clone https://aur.archlinux.org/yay-bin.git $HOME/yay-bin
+    cd yay-bin
+    makepkg -si
+    popd
     
     declare -A cmds
     cmds=([scrot]="scrot" [xclip]="xclip" [glow]="glow")
@@ -31,7 +54,7 @@ function install_yaypkgs()
             echo Trying to install ${cmds[$cmd]}
             yay -Syu --noconfirm ${cmds[$cmd]}
         else
-            echo $cmd commad exist. Package ${!cmds[$cmd]} is intalled
+            echo $cmd command exist.
         fi
     done
 }
@@ -47,10 +70,16 @@ function set_git()
 
 function set_gpg()
 {
-    gpg --import ~/.gnupg/public_jisu.pgp
-    gpg --import ~/.gnupg/private_jisu.pgp
+    if [ -f "~/.gnupg/public_jisu.pgp" ];then
+        gpg --import ~/.gnupg/public_jisu.pgp
+    else
+        gpg --auto-key-locate $1 --locate-keys $2
+    fi
 
-    git config --global user.signKey `gpg --list-key | awk 'FNR == 4 {gsub(/ /,"");print}'`
+    if [ -f "~/.gnupg/private_jisu.pgp" ];then
+        gpg --import ~/.gnupg/private_jisu.pgp
+        git config --global user.signKey `gpg --list-key | awk 'FNR == 4 {gsub(/ /,"");print}'`
+    fi
 }
 
 function myclip()
@@ -125,10 +154,13 @@ fi
 unset color_prompt force_color_prompt
 
 export GPG_TTY=$(tty)
-
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QR_IM_MODULE=ibus
+
+export GIT_CURL_VERBOSE=1 
+export GIT_TRACE=1
 
 export LANG=ko_KR.UTF-8
 

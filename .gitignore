@@ -1,9 +1,9 @@
-*
+*																		*
 
 !REAMDE.md
 
 !.bash_profile
-!.bash_alias
+!.bash_aliases
 !.bashrc
 !.bash_logout
 
@@ -12,6 +12,11 @@
 !.gitmessage
 !.gitattributes
 !.gitconfig
+
+!.gnupg/gpg.conf
+!.gnupg/gpg-agent.conf
+
+!.ssh/config
 
 !.emacs
 !.vimrc

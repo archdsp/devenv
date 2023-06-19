@@ -37,6 +37,14 @@
 (global-linum-mode t)
 (setq linum-format "%4d ")
 
+(whitespace-mode) dfdsfd
+
+(setq whitespace-display-mappings
+  '((space-mark   ?\     [?\ ]     [?.])
+    (space-mark   ?\xA0  [?\ ]     [?_])
+    (newline-mark ?\n    [?$ ?\n])
+    (tab-mark     ?\t    [?\u00BB ?\t] [?\\ ?\t])))
+
 ; Column Number
 (setq column-number-mode t)
 
@@ -77,7 +85,7 @@
 (global-set-key (kbd "M-l") 'right-char)
 
 ;; Basic Shortcut Keys ;;
-(global-set-key (kbd "C-a") 'mark-whole-buffer) 
+(global-set-key (kbd "C-a") 'mark-whole-bufer) 
 
 ; find word
 (global-set-key (kbd "C-f") 'isearch-forward)
