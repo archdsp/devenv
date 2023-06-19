@@ -37,7 +37,7 @@
 (global-linum-mode t)
 (setq linum-format "%4d ")
 
-(whitespace-mode) dfdsfd
+(whitespace-mode)
 
 (setq whitespace-display-mappings
   '((space-mark   ?\     [?\ ]     [?.])
