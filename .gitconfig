@@ -1,6 +1,7 @@
 [user]
     email = archdsp01@gmail.com
     name = archdsp (Dev)
+	signKey = 9DF07E25EDDD1277F38B52954534AF151D8D70F5
 [credential]
     helpergit = credential
     helper = store
@@ -11,7 +12,7 @@
     fsmonitor = true
     whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol
     eol = native
-    autocrlf = true
+	autocrlf = input
     tabwidth = 4
 [color]
 	ui = auto
