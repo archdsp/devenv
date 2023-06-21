@@ -22,6 +22,7 @@ function set_packages()
     cmds=( \
         [git]="git=${pkgmgr_install} git" \
         [gnupg]="gnupg=${pkgmgr_install} gnupg" \
+        [emacs]="emacs=${pkgmgr_install} emacs" \
         [scrot]="scrot=${pkgmgr_install} scrot" \
         [xclip]="xclip=${pkgmgr_install} xclip" \
         )
@@ -34,7 +35,7 @@ function set_packages()
         else
             echo $cmd command exist
         fi
-    done    
+    done
 }
 
 function install_yaypkgs()
