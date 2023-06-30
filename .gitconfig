@@ -14,6 +14,7 @@
     eol = native
     autocrlf = true
     tabwidth = 4
+	quotepath = false
 [color]
 	ui = auto
     branch = auto
@@ -73,3 +74,11 @@
 
 [pull]
 	rebase = false
+[i18n]
+	commitEncoding = utf-8
+	logOutputEncoding = utf-8
+[help]
+	format = info
+[author]
+	email = archdsp01@gmail.com
+	name = archdsp
