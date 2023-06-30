@@ -164,6 +164,7 @@ export GIT_CURL_VERBOSE=1
 export GIT_TRACE=1
 
 export LANG=ko_KR.UTF-8
+export LESSCHARSET=utf-8
 
 # set bell-style none
 
