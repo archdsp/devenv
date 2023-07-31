@@ -12,7 +12,7 @@
     fsmonitor = true
     whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol
     eol = native
-    autocrlf = true
+	autocrlf = input
     tabwidth = 4
 	quotepath = false
 [color]
@@ -39,7 +39,7 @@
     gpgsign = true
     template = ~/.gitmessage
 [gpg]
-	program = gpg2
+	program = gpg
 [log]
     decorate = full
     graphColors = "#457c2f","#5a7f85","#f56038","#f7a325","#ffca7a","#dee0e6","#1ac0c6","#ff6150"
