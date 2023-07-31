@@ -22,6 +22,12 @@ echo `gpg -k --with-keygrip | egrep -i "Keygrip" | awk 'FNR == 1 {print $3}'` > 
 ssh-add -L
 ```
 
+# Troubleshoot
+## Window <-> Linux, Freebsd eol problem
+```sh
+sed -i 's/\r//' <file-path>
+```
+
 
 # Setting list
 ## Shell
