@@ -14,8 +14,8 @@
 (add-hook 'after-change-major-mode-hook 'remove-scratch-buffer)
 
 ;; Removes *messages* from the buffer.
-(setq-default message-log-max nil)
-(kill-buffer "*Messages*")
+;(setq-default message-log-max nil)
+;(kill-buffer "*Messages*")
 
 ;; Removes *Completions* from buffer after you've opened a file.
 (add-hook 'minibuffer-exit-hook
@@ -150,8 +150,50 @@
 (setq c-default-style "bsd" c-basic-offset 4)
 (setq c-defun-tactic "go-outward")
 
+
+(global-company-mode t)
+(global-auto-composition-mode t)
+(require 'lsp-mode)
+(add-hook 'prog-mode-hook 'lsp) ; prog-mode-hook는 대부분의 프로그래밍 언어에서 LSP를 활성화
+(add-hook 'prog-mode-hook 'lsp-deferred) ; 로딩을 지연시켜 LSP서버에 파일일 열리고 난 뒤에 로드함
+(require 'lsp-ui)
+(add-hook 'lsp-mode-hook 'lsp-ui-mode) ; inline diagnostics, peek definitions 기능
+
+
+(defun my-autocomplete ()
+  "Show candidate and docs"
+  (interactive)  ;; 이 선언은 이 함수를 interactively (키 바인딩 등을 통해) 호출할 수 있게 합니다.
+  (company-manual-begin)
+  (message "문서랑 자동완성 키 눌림 CTRL + n"))
+
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "C-n") 'nil)
+  (define-key company-active-map (kbd "M-i") 'company-select-previous)
+  (define-key company-active-map (kbd "M-k") 'company-select-next)
+  (define-key company-active-map (kbd "RET") 'company-complete-selection))
+
+(require 'company-box)
+(add-hook 'company-mode-hook 'company-box-mode)
+
+(setq company-idle-delay 0)
+(global-set-key (kbd "C-n") 'my-autocomplete)
+
+
 ;backup files
 ;put autosave files (ie #foo#) and backup files (ie foo~) in ./.emacs_backup_src/".
 (setq backup-directory-alist '(("" . "./.emacs_backup_src/")))
 (setq delete-by-moving-to-trash t)
 (setq version-control t)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(company lsp-ui lsp-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
