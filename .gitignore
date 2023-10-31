@@ -8,6 +8,8 @@
 !.bash_logout
 !.zshrc
 
+!.config/fish/config.fish
+
 !.gitignore
 !.git-templates
 !.gitmessage

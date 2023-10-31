@@ -12,3 +12,5 @@ setopt PROMPT_SUBST
 PS1='%F{%(#.red.39)}%n%f@%F{208}%m%f$(git_branch) %F{39}%~%f
 %(#.%(?.#.%F{red}#%f).%(?.%%.%F{red}%%%f)) '
 PS1=$'%U${(r:$COLUMNS:: :)}%u'$PS1
+
+PATH=$PATH:~/.config/emacs/bin
