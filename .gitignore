@@ -6,6 +6,7 @@
 !.bash_aliases
 !.bashrc
 !.bash_logout
+!.zshrc
 
 !.gitignore
 !.git-templates
