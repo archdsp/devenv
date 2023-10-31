@@ -1,3 +1,10 @@
+function lscolor
+{
+    for color in {0..255}; do
+        print -P "%F{$color} $color %f"
+    done
+}
+
 GPG_TTY=$(tty)
 SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 GIT_CURL_VERBOSE=1
