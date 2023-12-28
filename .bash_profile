@@ -141,7 +141,7 @@ BG_CYAN="\[\e[106m\]"     # Background cyan
 BG_WHITE="\[\e[107m\]"    # Background white
 
 if [ "$color_prompt" = yes ]; then
-    TIME="\n${FG_MAGENTA}[\d \t]${RST}"
+    TIME="\n${FG_BLUE}[\d \t]${RST}"
     TERM127="`if [ \$? != 0 ]; then echo '${FG_RED}${BOLD}${HIGHLIGHT}!${RST}'; fi`"
     CWD="${FG_YELLOW}[job]: \j [dir]: \w${RST}${debian_chroot:+($debian_chroot)}"
     HOST="${FG_GREEN}${BOLD}\u${RST}${FG_WHITE}@${RST}${FG_CYAN}\h${RST}\$"
@@ -155,7 +155,11 @@ fi
 unset color_prompt force_color_prompt
 
 export GPG_TTY=$(tty)
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+unset SSH_AGENT_PID
+if [ "${gnupg_SSH_AUTH_SOCK_by:‐0}" ‐ne $$ ]; then
+    export SSH_AUTH_SOCK="$(gpgconf ‐‐list‐dirs agent‐ssh‐socket)"
+fi
+
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QR_IM_MODULE=ibus
@@ -170,3 +174,5 @@ export LESSCHARSET=utf-8
 
 [[ -f ~/.bash_aliases ]] &&  . ~/.bash_aliases
 [[ -f ~/.bashrc ]] && . ~/.bashrc
+
+[[ -f ~/.config/emacs/bin ]]  && export PATH=$HOME/.config/emacs/bin:$PATH
