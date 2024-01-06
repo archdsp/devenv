@@ -23,3 +23,5 @@
 
 !.emacs
 !.vimrc
+
+!.tmux.conf

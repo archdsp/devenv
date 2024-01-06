@@ -21,6 +21,7 @@ function set_packages()
 
     cmds=( \
         [git]="git=${pkgmgr_install} git" \
+        [gh]="gh=${pkgmgr_install} gh" \
         [gnupg]="gnupg=${pkgmgr_install} gnupg" \
         [emacs]="emacs=${pkgmgr_install} emacs" \
         [scrot]="scrot=${pkgmgr_install} scrot" \
@@ -156,9 +157,7 @@ unset color_prompt force_color_prompt
 
 export GPG_TTY=$(tty)
 unset SSH_AGENT_PID
-if [ "${gnupg_SSH_AUTH_SOCK_by:‐0}" ‐ne $$ ]; then
-    export SSH_AUTH_SOCK="$(gpgconf ‐‐list‐dirs agent‐ssh‐socket)"
-fi
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
