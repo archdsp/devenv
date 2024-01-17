@@ -24,3 +24,5 @@
 !.emacs
 !.emacs.d/init.el
 !.vimrc
+
+!.tmux.conf
