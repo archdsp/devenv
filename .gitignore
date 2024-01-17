@@ -22,4 +22,5 @@
 !.ssh/config
 
 !.emacs
+!.emacs.d/init.el
 !.vimrc
