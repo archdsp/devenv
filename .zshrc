@@ -15,7 +15,7 @@ elif [[ -x "/bin/nano" ]]; then
     EDITOR="/usr/bin/nano"			# needed for packages like cron
 fi
 
-export GPG_TTY=$(tty)
+export GPG_TTY="${TTY:-"$(tty)"}"
 unset SSH_AGENT_PID
 unset SSH_AUTH_SOCK
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
@@ -33,7 +33,7 @@ git_branch() {
 }
 
 setopt PROMPT_SUBST
-PS1='%F{%(#.red.39)}%n%f@%F{208}%m%f$(git_branch) %F{39}%~%f
+PS1='%F{%(#.red.39)}%n%f@%F{208}%m%f$(git_branch) %F{39}%~%f %?
 %(#.%(?.#.%F{red}#%f).%(?.%%.%F{red}%%%f)) '
 PS1=$'%U${(r:$COLUMNS:: :)}%u'$PS1
 

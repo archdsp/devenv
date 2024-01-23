@@ -1,3 +1,4 @@
+#!/bin/bash
 # Console Style Constants
 RST="\[\e[0m\]"           # Reset Styles
 BOLD="\[\e[1m\]"          # Bold
@@ -53,13 +54,11 @@ my_bash_prompt()
 	    CWD="${FG_YELLOW}[job]: \j [dir]: \w${RST}${debian_chroot:+($debian_chroot)}"
 	    HOST="${FG_GREEN}${BOLD}\u${RST}${FG_WHITE}@${RST}${FG_CYAN}\h${RST}"
 	    GIT="`__git_ps1`"
-	    local exit_status="\$?"
-	    PS1="${TIME} ${GIT} ${CWD} \n${HOST}  $exit_status $ "
-
+	    exit_status="\$?"
+	    PS1="${TIME} ${GIT} ${CWD} \n${HOST} $exit_status $ "
 	else
 	    PS1='\n[\d \t]\u@\h:\w\ `__git_ps1` ${STATUS} '
 	fi
-
 }
 
 my_bash_prompt
