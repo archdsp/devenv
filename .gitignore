@@ -2,12 +2,14 @@
 
 !REAMDE.md
 
+!.profile
 !.bash_profile
 !.bash_aliases
 !.bashrc
 !.bash_logout
 !.zshrc
 
+!.config/bash
 !.config/fish/config.fish
 
 !.gitignore

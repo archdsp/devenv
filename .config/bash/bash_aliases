@@ -2,3 +2,7 @@
 alias gpgs='gpg --list-key --with-subkey'
 alias e='emacs -nw --no-splash'
 alias d='doom run'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+

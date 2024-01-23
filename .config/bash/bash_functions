@@ -1,0 +1,62 @@
+#
+# ~/.bash_profile
+#
+
+
+function set_packages()
+{
+    . /etc/os-release
+
+    # Install yay package
+    unset distro_pkgmgr install cmds check
+    unset cmds
+    declare -A distro_pkgmgr install cmds check
+
+    distro_pkgmgr=([arch]='pacman' [ubuntu]='apt')
+    install=([arch]='-Syu' [ubuntu]='-y install')
+    check=([arch]='-Q' [ubuntu]='-qq list')
+
+    pkgmgr_install="sudo `echo ${distro_pkgmgr[$ID]} ${install[$ID]}`"
+    pkgmgr_check="`echo ${distro_pkgmgr[$ID]} ${check[$ID]}`"
+
+    cmds=( \
+        [git]="git=${pkgmgr_install} git" \
+        [gh]="gh=${pkgmgr_install} gh" \
+        [gnupg]="gnupg=${pkgmgr_install} gnupg" \
+        [emacs]="emacs=${pkgmgr_install} emacs" \
+        [scrot]="scrot=${pkgmgr_install} scrot" \
+        [xclip]="xclip=${pkgmgr_install} xclip" \
+        )
+
+    for cmd in "${!cmds[@]}"; do
+        if [ -z "$($pkgmgr_check $cmd)" ]; then
+            record=${cmds[$cmd]}
+            install_cmd=${record#*=}
+            eval $install_cmd
+        else
+            echo $cmd command exist
+        fi
+    done
+}
+
+function install_yaypkgs()
+{
+    . /etc/os-release
+
+    pacman -S --needed git base-devel
+    git clone https://aur.archlinux.org/yay-bin.git $HOME/yay-bin
+    cd yay-bin
+    makepkg -si
+    popd
+    
+    declare -A cmds
+    cmds=([scrot]="scrot" [xclip]="xclip" [glow]="glow")
+    for cmd in "${!cmds[@]}"; do
+        if [[ -z "$(type -all $cmd)" || $?!="0" ]]; then
+            echo Trying to install ${cmds[$cmd]}
+            yay -Syu --noconfirm ${cmds[$cmd]}
+        else
+            echo $cmd command exist.
+        fi
+    done
+}
