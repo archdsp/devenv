@@ -1,6 +1,7 @@
 (global-display-line-numbers-mode t)
 
 (global-hl-line-mode t)
+(set-face-background 'hl-line "#333333")
 (whitespace-mode t)
 
 (global-set-key [f10] 'describe-function)
@@ -40,3 +41,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'upcase-region 'disabled nil)

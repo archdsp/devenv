@@ -17,6 +17,7 @@ fi
 
 export GPG_TTY=$(tty)
 unset SSH_AGENT_PID
+unset SSH_AUTH_SOCK
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 
 export GIT_CURL_VERBOSE=1
