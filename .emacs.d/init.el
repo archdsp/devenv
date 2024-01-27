@@ -1,4 +1,10 @@
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+
 (global-display-line-numbers-mode t)
+(column-number-mode t)
+
+(save-place-mode t)
 
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#333333")
