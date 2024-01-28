@@ -33,8 +33,9 @@ git_branch() {
 }
 
 setopt PROMPT_SUBST
-PS1='%F{%(#.red.39)}%n%f@%F{208}%m%f$(git_branch) %F{39}%~%f %?
-%(#.%(?.#.%F{red}#%f).%(?.%%.%F{red}%%%f)) '
+PS1='
+%F{%(#.blue.50)}%D{%a %m-%d %H:%M:%S}%f%F{green}$(git_branch)%f %F{yellow}[dir]: %~%f
+%F{%(#.red.39)}%n%f@%F{208}%m%f%F{39}%f %? %(#.%(?.#.%F{red}#%f).%(?.%%.%F{red}%%%f)) '
 PS1=$'%U${(r:$COLUMNS:: :)}%u'$PS1
 
 export PATH=$PATH:~/.config/emacs/bin
