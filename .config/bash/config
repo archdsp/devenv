@@ -7,3 +7,5 @@ elif [[ -x "/bin/vi" ]]; then
 elif [[ -x "/bin/nano" ]]; then
     EDITOR="/usr/bin/nano"			# needed for packages like cron
 fi
+
+shopt -s checkwinsize
