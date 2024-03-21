@@ -3,4 +3,5 @@ if [ -d .config/bash ]; then
     . $i
   done
   unset i
+  my_bash_prompt
 fi
