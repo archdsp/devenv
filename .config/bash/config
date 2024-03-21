@@ -2,6 +2,7 @@ if [[ -x "/bin/vim" ]]; then
     EDITOR="/usr/bin/vim"			# needed for packages like cron
 elif [[ -x "/bin/emacs" ]]; then
     EDITOR="/usr/bin/emacs"
+    FCEDIT="/usr/bin/emacs"
 elif [[ -x "/bin/vi" ]]; then
     EDITOR="usr/bin/vi"
 elif [[ -x "/bin/nano" ]]; then
