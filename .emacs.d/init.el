@@ -7,7 +7,9 @@
 (save-place-mode t)
 
 (global-hl-line-mode t)
-(set-face-background 'hl-line "#333333")
+(set-face-background 'hl-line "#112211")
+(global-highlight-change-mode)
+
 (whitespace-mode t)
 
 (global-set-key [f10] 'describe-function)

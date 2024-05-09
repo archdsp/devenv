@@ -50,6 +50,10 @@ draw_line()
   done
 }
 
+git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
 my_bash_prompt()
 {
 	# set a fancy prompt (non-color, unless we know we "want" color)
@@ -57,15 +61,28 @@ my_bash_prompt()
 	    xterm-color|*-256color) color_prompt=yes;;
 	esac
 
+    if [ -f /usr/share/git/completion/git-completion.bash ]; then
+        . /usr/share/git/completion/git-completion.bash
+    fi
+
+    if [ -f /usr/share/git/completion/git-prompt.sh ]; then
+        . /usr/share/git/completion/git-prompt.sh
+        #GIT="${FG_MAGENTA}"`__git_ps1`"${RST}"
+        GIT="${FG_MAGENTA}${HIGHLIGHT}"$(git_branch)"${RST}"
+    fi
+
 	if [ "$TERM" = "xterm-256color" ]; then
 	    TIME="\n${FG_BLUE}[\d \t]${RST}"
-	    CWD="${FG_YELLOW}[job]: \j [dir]: \w${RST}${debian_chroot:+($debian_chroot)}"
+	    CWD="${FG_YELLOW}[job]: \j [dir]: \w"
 	    HOST="${FG_GREEN}${BOLD}\u${RST}${FG_WHITE}@${RST}${FG_CYAN}\h${RST}"
-	    GIT="`__git_ps1`"
 	    exit_status="\$?"
 	    PS1='$(draw_line)'"${TIME} ${GIT} ${CWD} \n${HOST} $exit_status $ "        
 	else
-	    PS1='\n[\d \t]\u@\h:\w\ `__git_ps1` ${STATUS} '
+	    TIME="\n[\d \t]"
+        CWD="[job]: \j [dir]: \w"
+        HOST="\u@\h"
+        exit_status="\$?"
+        PS1='$(draw_line)'"${TIME} ${GIT} ${CWD} \n${HOST} $exit_status $ "
 	fi
 }
 

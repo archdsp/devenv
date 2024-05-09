@@ -60,3 +60,4 @@ function install_yaypkgs()
         fi
     done
 }
+
