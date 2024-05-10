@@ -1,0 +1,2 @@
+alias emacs="emacs -nw --no-splash"
+alias e="emacs -nw --no-splash"

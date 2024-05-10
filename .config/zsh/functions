@@ -1,0 +1,40 @@
+#!/bin/zsh
+git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+function lscolor
+{
+    for color in {0..255}; do
+        print -P "%F{$color} $color %f"
+    done
+}
+
+my_zsh_prompt()
+{
+    if [ -f /usr/share/git/completion/git-prompt.sh ]; then
+        . /usr/share/git/completion/git-prompt.sh
+        #GIT="${FG_MAGENTA}"`__git_ps1`"${RST}"
+        GIT=$(git_branch)
+    fi
+
+    unset PS1
+	if [ "$TERM" = "xterm-256color" ]; then
+        TIME="[%F{%(#.blue.50)}%D{%a %m-%d %H:%M:%S}%f]"
+        CWD="%F{yellow}[dir]: %~%f"
+        GIT="%F{green}"$GIT"%f "
+        USER_NAME='%F{%(#.red.39)}%n%f'
+        HOST_NAME=$HOST
+        STATUS='%F{39}%f %? %(#.%(?.#.%F{red}#%f).%(?.%%.%F{red}%%%f)) '
+        LINE='%U'${(r:COLUMNS:: :)}'%u'
+        PS1=$LINE$TIME$GIT$CWD$'\n'$USER_NAME'@'$HOST_NAME$STATUS 
+	else
+	    TIME="\n[\d \t]"
+        CWD="[job]: \j [dir]: \w"
+        HOST="\u@\h"
+        exit_status="\$?"
+        PS1=$'%U${(r:$COLUMNS:: :)}%u'"${TIME} ${GIT} ${CWD} \n${HOST} $exit_status $ "
+	fi
+}
+
+my_zsh_prompt
