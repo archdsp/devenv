@@ -1,3 +1,5 @@
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-screen t)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
