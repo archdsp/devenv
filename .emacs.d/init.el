@@ -10,7 +10,6 @@
 
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#112211")
-(global-highlight-changes-mode t)
 
 (whitespace-mode t)
 
