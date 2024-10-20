@@ -26,7 +26,7 @@ my_zsh_prompt()
         USER_NAME='%F{%(#.red.39)}%n%f'
         HOST_NAME=$HOST
         STATUS='%F{39}%f %? %(#.%(?.#.%F{red}#%f).%(?.%%.%F{red}%%%f)) '
-        LINE='%U'${(r:COLUMNS:: :)}'%u'
+        LINE=$'\n''%U'${(r:COLUMNS:: :)}'%u'$'\n'
         PS1=$LINE$TIME$GIT$CWD$'\n'$USER_NAME'@'$HOST_NAME$STATUS 
 	else
 	    TIME="\n[\d \t]"
