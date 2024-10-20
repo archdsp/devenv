@@ -1,6 +1,26 @@
 #!/bin/zsh
+
 git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+    # 현재 Git 디렉토리가 아닐 경우 오류 메시지 출력
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "(not a git repository)"
+        return
+    fi
+
+    # 현재 브랜치 이름을 변수에 저장
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+    # 브랜치가 없을 경우 (예: detached HEAD 상태) 메시지 출력
+    if [ -z "$branch" ]; then
+        branch="(detached HEAD)"
+    fi
+
+    # 변경사항이 있는지 확인
+    if [ -n "$(git status --porcelain)" ]; then
+        echo " ($branch*)"
+    else
+        echo " ($branch)"
+    fi
 }
 
 function lscolor
@@ -12,11 +32,7 @@ function lscolor
 
 my_zsh_prompt()
 {
-    if [ -f /usr/share/git/completion/git-prompt.sh ]; then
-        . /usr/share/git/completion/git-prompt.sh
-        #GIT="${FG_MAGENTA}"`__git_ps1`"${RST}"
-        GIT=$(git_branch)
-    fi
+    GIT=$(git_branch)
 
     unset PS1
 	if [ "$TERM" = "xterm-256color" ]; then
