@@ -4,9 +4,13 @@
 (setq-default indent-tabs-mode nil)
 (global-display-line-numbers-mode t)
 
-(prefer-coding-system 'utf-8)
 (set-language-environment "Korean")
-(setq default-buffer-file-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(setq coding-system-for-read 'utf-8)
+(setq-default file-name-coding-system 'utf-8)
 
 (column-number-mode t)
 
