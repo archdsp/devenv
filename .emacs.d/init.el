@@ -53,40 +53,86 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(use-package exec-path-from-shell
+  :init
+  (setq exec-path-from-shell-variables '("PATH" "CONDA_PREFIX" "CONDA_DEFAULT_ENV"))
+  :config
+  (exec-path-from-shell-initialize))
+
 (use-package lsp-mode
   :ensure t
-  :hook ((python-mode . lsp-deferred)) 
-  :commands lsp-deferred
+  ;:hook ((python-mode . lsp)) 
+  :commands lsp
   :config
-  (setq lsp-prefer-flymake nil)) 
+  (setq lsp-headerline-breadcrumb-enable t
+        lsp-enable-symbol-highlighting t
+        lsp-signature-auto-activate t
+        lsp-signature-render-documentation t
+        lsp-completion-provider :capf))
 
 (use-package lsp-pyright
   :ensure t
+  :custom (lsp-pyright-langserver-command "pyright")
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
-                         (lsp-deferred)))) 
+                         (lsp-deferred)))
+  :custom
+  (lsp-pyright-python-executable-cmd "python"))
+
+(use-package conda
+  :after lsp-pyright
+  :ensure t
+  :config
+  (setq conda-anaconda-home (expand-file-name "~/anaconda3")) ;; or your path
+  (setq conda-env-home-directory (expand-file-name "~/anaconda3"))
+  (conda-env-initialize-interactive-shells)
+  (conda-env-initialize-eshell)
+  (conda-env-autoactivate-mode t))
+
+(defun my/update-pyright-python-path-based-on-conda ()
+  (let* ((conda-env (getenv "CONDA_DEFAULT_ENV"))
+         (conda-prefix (getenv "CONDA_PREFIX"))
+         (python-path (when conda-prefix
+                        (expand-file-name "bin/python" conda-prefix))))
+    (when (and conda-env python-path (file-exists-p python-path))
+      (setq lsp-pyright-python-executable-cmd python-path)
+      (message "[Pyright] Python path set to: %s" python-path)
+      (when (bound-and-true-p lsp-mode)
+        (lsp-restart-workspace)))))
+
+(add-hook 'conda-postactivate-hook #'my/update-pyright-python-path-based-on-conda)
 
 (use-package lsp-ui
+  :after lsp-mode
   :ensure t
-  :commands lsp-ui-mode)
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-delay 0.1
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-code-actions t
+        lsp-ui-sideline-show-diagnostics t))
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode)) ;;
 
-(use-package pyvenv
-  :ensure t
-  :config
-  (pyvenv-mode 1) ;; 
-  (setq pyvenv-workon ".venv"))
 
-;; Company Mode for Auto-Completion
+;Company Mode for Auto-Completion
 (use-package company
-  :ensure t
-  :hook (python-mode . company-mode)
+;;   :init
+;;   (global-company-mode)
+;;   :ensure t
+;;   ;:hook (python-mode . company-mode)
   :config
-  (setq company-idle-delay 0.2)
-  (setq company-minimum-prefix-length 1)
-  (setq company-selection-wrap-around t))
+  (setq company-backends '(company-capf)))
+;;   (setq company-idle-delay 0.0)
+;;   (setq company-tooltip-align-annotations t)
+;;   (setq company-minimum-prefix-length 1)
+;;   (setq company-selection-wrap-around t))
+
 
 ;; Optional: Better UI for auto-completion
 (use-package company-box
@@ -99,7 +145,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(lsp-pyright lsp-python-ms lsp-ui lsp-mode))
+ '(package-selected-packages
+   '(company-box conda exec-path-from-shell flycheck lsp-pyright lsp-ui))
  '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -109,4 +156,3 @@
  )
 (put 'upcase-region 'disabled nil)
 (setq lsp-log-io nil)
-
