@@ -1,0 +1,24 @@
+# Rule: Engineering Discipline
+
+## Purpose
+Ensure architecture consistency, performance, and mathematical rigor
+
+## Rules
+- MUST use layered or clean architecture
+- MUST separate business logic from I/O and hardware layers
+- MUST avoid global state
+- MUST use type hints in Python
+- MUST consider memory layout and cache in C/C++
+- MUST measure latency and throughput in edge systems
+- MUST justify algorithms with complexity or empirical evidence
+
+## Anti-patterns
+- NEVER put business logic in controllers
+- NEVER use blocking pipeline in real-time systems
+- NEVER rely on heuristic without justification
+- NEVER introduce hidden state
+
+## AI Behavior
+- MUST generate executable code only
+- MUST minimize changes (diff-based)
+- MUST NOT generate pseudo code
