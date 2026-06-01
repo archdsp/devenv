@@ -4,7 +4,7 @@
 git init
 git remote add origin https://github.com/archdsp/devenv.git
 git fetch --all
-git reset --hard origin/master
+git reset --hard origin/main
 ```
 
 ## Apply
