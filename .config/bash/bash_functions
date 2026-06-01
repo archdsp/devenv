@@ -90,6 +90,42 @@ function set_git()
     echo "git credential.helper = $helper (→ ~/.gitconfig.local)"
 }
 
+# macOS: PAM에 Touch ID(지문)를 등록해 sudo 인증을 지문으로 처리 (멱등).
+# /etc/pam.d/sudo_local 은 OS 업데이트에도 보존되는 Apple 권장 위치이며,
+# /etc/pam.d/sudo 가 기본으로 이 파일을 include 하므로 sudo_local 만 작성하면 된다.
+# tmux/screen 세션 안에서도 지문 프롬프트가 뜨도록 pam_reattach 도 함께 설정한다.
+function set_touchid()
+{
+    if [ "$(uname -s)" != "Darwin" ]; then
+        echo "set_touchid: macOS 전용입니다 (현재 $(uname -s)). 건너뜀."
+        return 1
+    fi
+
+    local sudo_local="/etc/pam.d/sudo_local"
+    local tid_line="auth       sufficient     pam_tid.so"
+    local reattach_line=""
+
+    # (선택) tmux/screen 안에서도 Touch ID 프롬프트가 뜨도록 pam_reattach 설치
+    if command -v brew >/dev/null 2>&1; then
+        brew list pam-reattach >/dev/null 2>&1 || brew install pam-reattach
+        local so="$(brew --prefix)/lib/pam/pam_reattach.so"
+        [ -f "$so" ] && reattach_line="auth       optional       $so"
+    else
+        echo "set_touchid: Homebrew 없음 → tmux용 pam_reattach 생략, sudo만 설정."
+    fi
+
+    # pam_reattach 는 반드시 pam_tid 보다 앞에 와야 한다.
+    {
+        echo "# managed by devenv set_touchid — Touch ID for sudo"
+        [ -n "$reattach_line" ] && echo "$reattach_line"
+        echo "$tid_line"
+    } | sudo tee "$sudo_local" >/dev/null
+
+    echo "set_touchid: 완료 → 새 터미널에서 'sudo -v' 실행 시 지문 인증창이 떠야 함."
+    echo "  참고) SSH 클라이언트 키에 지문을 쓰려면 PAM이 아니라 Secure Enclave 키가 필요"
+    echo "        (ssh-keygen -t ecdsa-sk, 또는 Secretive 앱)."
+}
+
 function install_yaypkgs()
 {
     . /etc/os-release

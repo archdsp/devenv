@@ -14,6 +14,7 @@ source ~/.config/bash/bash_functions   # load helper functions
 set_packages        # install git/gh/gnupg/emacs/tmux/zsh (+ OS-specific pinentry)
 gpg_set_pinentry    # set OS-specific pinentry-program in ~/.gnupg/gpg-agent.conf
 set_git             # set OS-specific credential.helper in ~/.gitconfig.local
+set_touchid         # (macOS 전용) sudo를 Touch ID(지문)로 인증하도록 PAM 설정 + tmux용 pam_reattach
 ```
 
 > OS는 셸이 `uname`으로 런타임 감지(`$DOTFILES_OS`)하므로 zsh/bash 설정은 macOS·Ubuntu 공통입니다.
