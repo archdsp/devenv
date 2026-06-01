@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# ── OS detection (runtime, single source) ──────────────────────────────────
+case "$(uname -s)" in
+  Darwin) DOTFILES_OS=macos ;;
+  Linux)  DOTFILES_OS=linux; [ -r /etc/os-release ] && . /etc/os-release && DOTFILES_OS=$ID ;;
+  *)      DOTFILES_OS="$(uname -s)" ;;
+esac
+export DOTFILES_OS
+
 # Console Style Constants
 RST="\[\e[0m\]"           # Reset Styles
 BOLD="\[\e[1m\]"          # Bold
@@ -21,22 +30,23 @@ BG_MAGENTA="\[\e[105m\]"  # Background magenta
 BG_CYAN="\[\e[106m\]"     # Background cyan
 BG_WHITE="\[\e[107m\]"    # Background white
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export GPG_TTY=$(tty)
-unset SSH_AGENT_PID
-export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+if command -v gpgconf >/dev/null 2>&1; then
+  unset SSH_AGENT_PID
+  export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+fi
 
-export GTK_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-export QR_IM_MODULE=ibus
-
-export GIT_CURL_VERBOSE=1 
-export GIT_TRACE=1
+# Linux input method (ibus) — skip on macOS
+if [ "$DOTFILES_OS" != macos ]; then
+  export GTK_IM_MODULE=ibus
+  export XMODIFIERS=@im=ibus
+  export QT_IM_MODULE=ibus
+fi
 
 export LANG=ko_KR.UTF-8
 export LESSCHARSET=utf-8
 
-[[ -f ~/.config/emacs/bin ]]  && export PATH=$HOME/.config/emacs/bin:$PATH
+[[ -d ~/.config/emacs/bin ]] && export PATH=$HOME/.config/emacs/bin:$PATH
 
 export GIT_PS1_SHOWUPSTREAM="verbose name"
 export GIT_PS1_DESCRIBE_STYLE="branch"

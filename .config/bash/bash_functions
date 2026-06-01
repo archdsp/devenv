@@ -5,38 +5,89 @@
 
 function set_packages()
 {
-    . /etc/os-release
+    # OS detection
+    local OS
+    case "$(uname -s)" in
+        Darwin) OS=macos ;;
+        Linux)  OS=linux; [ -r /etc/os-release ] && . /etc/os-release && OS=$ID ;;
+    esac
 
-    # Install yay package
-    unset distro_pkgmgr install cmds check
-    unset cmds
-    declare -A distro_pkgmgr install cmds check
+    # Common packages for every OS
+    local pkgs=(git gh gnupg emacs tmux zsh)
 
-    distro_pkgmgr=([arch]='pacman' [ubuntu]='apt')
-    install=([arch]='-Syu' [ubuntu]='-y install')
-    check=([arch]='-Q' [ubuntu]='-qq list')
+    case "$OS" in
+        macos)
+            if ! command -v brew >/dev/null 2>&1; then
+                echo "Homebrew가 필요합니다: https://brew.sh"
+                return 1
+            fi
+            pkgs+=(pinentry-mac)
+            for p in "${pkgs[@]}"; do
+                if brew list "$p" >/dev/null 2>&1; then echo "$p 설치됨"; else brew install "$p"; fi
+            done
+            ;;
+        ubuntu|debian)
+            pkgs+=(pinentry-curses scrot xclip)
+            sudo apt-get update
+            for p in "${pkgs[@]}"; do
+                if dpkg -s "$p" >/dev/null 2>&1; then echo "$p 설치됨"; else sudo apt-get install -y "$p"; fi
+            done
+            ;;
+        arch)
+            pkgs+=(pinentry scrot xclip)
+            for p in "${pkgs[@]}"; do
+                if pacman -Q "$p" >/dev/null 2>&1; then echo "$p 설치됨"; else sudo pacman -S --noconfirm "$p"; fi
+            done
+            ;;
+        *)
+            echo "지원하지 않는 OS: $OS"
+            return 1
+            ;;
+    esac
+}
 
-    pkgmgr_install="sudo `echo ${distro_pkgmgr[$ID]} ${install[$ID]}`"
-    pkgmgr_check="`echo ${distro_pkgmgr[$ID]} ${check[$ID]}`"
+# gpg-agent의 pinentry-program을 OS에 맞게 설정 (멱등).
+function gpg_set_pinentry()
+{
+    local conf="$HOME/.gnupg/gpg-agent.conf" prog="" c
+    case "$(uname -s)" in
+        Darwin)
+            for c in /opt/homebrew/bin/pinentry-mac /usr/local/bin/pinentry-mac; do
+                [ -x "$c" ] && prog="$c" && break
+            done ;;
+        Linux)
+            for c in /usr/bin/pinentry-curses /usr/bin/pinentry-gnome3 /usr/bin/pinentry; do
+                [ -x "$c" ] && prog="$c" && break
+            done ;;
+    esac
+    if [ -z "$prog" ]; then
+        echo "pinentry를 찾지 못했습니다 — set_packages로 설치하세요."
+        return 1
+    fi
+    mkdir -p "$HOME/.gnupg" && chmod 700 "$HOME/.gnupg"
+    if [ -f "$conf" ]; then
+        grep -v '^pinentry-program' "$conf" > "$conf.tmp" && mv "$conf.tmp" "$conf"
+    fi
+    echo "pinentry-program $prog" >> "$conf"
+    gpg-connect-agent reloadagent /bye >/dev/null 2>&1
+    echo "pinentry-program → $prog"
+}
 
-    cmds=( \
-        [git]="git=${pkgmgr_install} git" \
-        [gh]="gh=${pkgmgr_install} gh" \
-        [gnupg]="gnupg=${pkgmgr_install} gnupg" \
-        [emacs]="emacs=${pkgmgr_install} emacs" \
-        [scrot]="scrot=${pkgmgr_install} scrot" \
-        [xclip]="xclip=${pkgmgr_install} xclip" \
-        )
-
-    for cmd in "${!cmds[@]}"; do
-        if [ -z "$($pkgmgr_check $cmd)" ]; then
-            record=${cmds[$cmd]}
-            install_cmd=${record#*=}
-            eval $install_cmd
-        else
-            echo $cmd command exist
-        fi
-    done
+# OS에 맞는 git credential helper를 ~/.gitconfig.local에 설정.
+function set_git()
+{
+    local helper
+    case "$(uname -s)" in
+        Darwin) helper=osxkeychain ;;
+        Linux)
+            if [ -x /usr/lib/git-core/git-credential-libsecret ]; then
+                helper=/usr/lib/git-core/git-credential-libsecret
+            else
+                helper='cache --timeout=86400'
+            fi ;;
+    esac
+    git config --file "$HOME/.gitconfig.local" credential.helper "$helper"
+    echo "git credential.helper = $helper (→ ~/.gitconfig.local)"
 }
 
 function install_yaypkgs()

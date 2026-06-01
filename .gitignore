@@ -12,6 +12,12 @@
 !.config/bash
 !.config/fish/config.fish
 
+# zsh config (NOT secrets — ~/.config/zsh/secrets stays ignored)
+!.config/zsh/aliases
+!.config/zsh/config
+!.config/zsh/functions
+!.config/zsh/variables
+
 !.gitignore
 !.git-templates
 !.gitmessage
