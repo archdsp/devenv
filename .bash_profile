@@ -1,17 +1,7 @@
-#!/bin/zsh
-if [ -d $HOME/.config/zsh ]; then
-  for i in $HOME/.config/zsh/* ; do
-    . $i
-  done
-  unset i
-  echo -e -n "\x1b[\x35 q"
-  my_zsh_prompt
-fi
-export PATH="$HOME/.local/bin:$PATH"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
