@@ -1,0 +1,40 @@
+name: dotfiles CI
+
+# dotfiles 설정 파일 단위테스트 (tests/run-tests.sh)
+# main / macos 브랜치 push 및 모든 PR에서 실행.
+
+on:
+  push:
+    branches: [main, macos]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: 검증 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ubuntu: 전체 도구 설치로 모든 검사 수행
+      # (bash/git/python3 는 기본 제공, zsh/fish/emacs 추가 설치)
+      - name: 도구 설치 (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zsh fish emacs-nox
+
+      # macOS: 기본 제공 도구(bash/zsh/git/python3)로 검사,
+      # 미설치 도구(fish/emacs)는 러너 스크립트가 SKIP 처리.
+      - name: 도구 확인
+        run: |
+          echo "bash:   $(bash --version | head -1)"
+          echo "python: $(python3 --version)"
+
+      - name: 단위테스트 실행
+        run: bash tests/run-tests.sh

@@ -43,3 +43,10 @@
 !.codex/
 !.codex/config.toml
 !.codex/AGENTS.md
+
+# CI / 테스트
+!.github/
+!.github/workflows/
+!.github/workflows/ci.yml
+!tests/
+!tests/run-tests.sh
