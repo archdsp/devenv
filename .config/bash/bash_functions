@@ -5,38 +5,125 @@
 
 function set_packages()
 {
-    . /etc/os-release
+    # OS detection
+    local OS
+    case "$(uname -s)" in
+        Darwin) OS=macos ;;
+        Linux)  OS=linux; [ -r /etc/os-release ] && . /etc/os-release && OS=$ID ;;
+    esac
 
-    # Install yay package
-    unset distro_pkgmgr install cmds check
-    unset cmds
-    declare -A distro_pkgmgr install cmds check
+    # Common packages for every OS
+    local pkgs=(git gh gnupg emacs tmux zsh)
 
-    distro_pkgmgr=([arch]='pacman' [ubuntu]='apt')
-    install=([arch]='-Syu' [ubuntu]='-y install')
-    check=([arch]='-Q' [ubuntu]='-qq list')
+    case "$OS" in
+        macos)
+            if ! command -v brew >/dev/null 2>&1; then
+                echo "Homebrew가 필요합니다: https://brew.sh"
+                return 1
+            fi
+            pkgs+=(pinentry-mac)
+            for p in "${pkgs[@]}"; do
+                if brew list "$p" >/dev/null 2>&1; then echo "$p 설치됨"; else brew install "$p"; fi
+            done
+            ;;
+        ubuntu|debian)
+            pkgs+=(pinentry-curses scrot xclip)
+            sudo apt-get update
+            for p in "${pkgs[@]}"; do
+                if dpkg -s "$p" >/dev/null 2>&1; then echo "$p 설치됨"; else sudo apt-get install -y "$p"; fi
+            done
+            ;;
+        arch)
+            pkgs+=(pinentry scrot xclip)
+            for p in "${pkgs[@]}"; do
+                if pacman -Q "$p" >/dev/null 2>&1; then echo "$p 설치됨"; else sudo pacman -S --noconfirm "$p"; fi
+            done
+            ;;
+        *)
+            echo "지원하지 않는 OS: $OS"
+            return 1
+            ;;
+    esac
+}
 
-    pkgmgr_install="sudo `echo ${distro_pkgmgr[$ID]} ${install[$ID]}`"
-    pkgmgr_check="`echo ${distro_pkgmgr[$ID]} ${check[$ID]}`"
+# gpg-agent의 pinentry-program을 OS에 맞게 설정 (멱등).
+function gpg_set_pinentry()
+{
+    local conf="$HOME/.gnupg/gpg-agent.conf" prog="" c
+    case "$(uname -s)" in
+        Darwin)
+            for c in /opt/homebrew/bin/pinentry-mac /usr/local/bin/pinentry-mac; do
+                [ -x "$c" ] && prog="$c" && break
+            done ;;
+        Linux)
+            for c in /usr/bin/pinentry-curses /usr/bin/pinentry-gnome3 /usr/bin/pinentry; do
+                [ -x "$c" ] && prog="$c" && break
+            done ;;
+    esac
+    if [ -z "$prog" ]; then
+        echo "pinentry를 찾지 못했습니다 — set_packages로 설치하세요."
+        return 1
+    fi
+    mkdir -p "$HOME/.gnupg" && chmod 700 "$HOME/.gnupg"
+    if [ -f "$conf" ]; then
+        grep -v '^pinentry-program' "$conf" > "$conf.tmp" && mv "$conf.tmp" "$conf"
+    fi
+    echo "pinentry-program $prog" >> "$conf"
+    gpg-connect-agent reloadagent /bye >/dev/null 2>&1
+    echo "pinentry-program → $prog"
+}
 
-    cmds=( \
-        [git]="git=${pkgmgr_install} git" \
-        [gh]="gh=${pkgmgr_install} gh" \
-        [gnupg]="gnupg=${pkgmgr_install} gnupg" \
-        [emacs]="emacs=${pkgmgr_install} emacs" \
-        [scrot]="scrot=${pkgmgr_install} scrot" \
-        [xclip]="xclip=${pkgmgr_install} xclip" \
-        )
+# OS에 맞는 git credential helper를 ~/.gitconfig.local에 설정.
+function set_git()
+{
+    local helper
+    case "$(uname -s)" in
+        Darwin) helper=osxkeychain ;;
+        Linux)
+            if [ -x /usr/lib/git-core/git-credential-libsecret ]; then
+                helper=/usr/lib/git-core/git-credential-libsecret
+            else
+                helper='cache --timeout=86400'
+            fi ;;
+    esac
+    git config --file "$HOME/.gitconfig.local" credential.helper "$helper"
+    echo "git credential.helper = $helper (→ ~/.gitconfig.local)"
+}
 
-    for cmd in "${!cmds[@]}"; do
-        if [ -z "$($pkgmgr_check $cmd)" ]; then
-            record=${cmds[$cmd]}
-            install_cmd=${record#*=}
-            eval $install_cmd
-        else
-            echo $cmd command exist
-        fi
-    done
+# macOS: PAM에 Touch ID(지문)를 등록해 sudo 인증을 지문으로 처리 (멱등).
+# /etc/pam.d/sudo_local 은 OS 업데이트에도 보존되는 Apple 권장 위치이며,
+# /etc/pam.d/sudo 가 기본으로 이 파일을 include 하므로 sudo_local 만 작성하면 된다.
+# tmux/screen 세션 안에서도 지문 프롬프트가 뜨도록 pam_reattach 도 함께 설정한다.
+function set_touchid()
+{
+    if [ "$(uname -s)" != "Darwin" ]; then
+        echo "set_touchid: macOS 전용입니다 (현재 $(uname -s)). 건너뜀."
+        return 1
+    fi
+
+    local sudo_local="/etc/pam.d/sudo_local"
+    local tid_line="auth       sufficient     pam_tid.so"
+    local reattach_line=""
+
+    # (선택) tmux/screen 안에서도 Touch ID 프롬프트가 뜨도록 pam_reattach 설치
+    if command -v brew >/dev/null 2>&1; then
+        brew list pam-reattach >/dev/null 2>&1 || brew install pam-reattach
+        local so="$(brew --prefix)/lib/pam/pam_reattach.so"
+        [ -f "$so" ] && reattach_line="auth       optional       $so"
+    else
+        echo "set_touchid: Homebrew 없음 → tmux용 pam_reattach 생략, sudo만 설정."
+    fi
+
+    # pam_reattach 는 반드시 pam_tid 보다 앞에 와야 한다.
+    {
+        echo "# managed by devenv set_touchid — Touch ID for sudo"
+        [ -n "$reattach_line" ] && echo "$reattach_line"
+        echo "$tid_line"
+    } | sudo tee "$sudo_local" >/dev/null
+
+    echo "set_touchid: 완료 → 새 터미널에서 'sudo -v' 실행 시 지문 인증창이 떠야 함."
+    echo "  참고) SSH 클라이언트 키에 지문을 쓰려면 PAM이 아니라 Secure Enclave 키가 필요"
+    echo "        (ssh-keygen -t ecdsa-sk, 또는 Secretive 앱)."
 }
 
 function install_yaypkgs()

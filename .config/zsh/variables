@@ -1,25 +1,35 @@
-if [[ -x "/bin/vim" ]]; then
-    EDITOR="/usr/bin/vim"			# needed for packages like cron
-elif [[ -x "/bin/emacs" ]]; then
-    EDITOR="/usr/bin/emacs"
-elif [[ -x "/bin/vi" ]]; then
-    EDITOR="usr/bin/vi"
-elif [[ -x "/bin/nano" ]]; then
-    EDITOR="/usr/bin/nano"			# needed for packages like cron
+#!/bin/zsh
+
+# ── OS detection (runtime, single source) ──────────────────────────────────
+case "$(uname -s)" in
+  Darwin) DOTFILES_OS=macos ;;
+  Linux)  DOTFILES_OS=linux; [ -r /etc/os-release ] && . /etc/os-release && DOTFILES_OS=$ID ;;
+  *)      DOTFILES_OS="$(uname -s)" ;;
+esac
+export DOTFILES_OS
+
+# ── Editor — emacs first, then fallbacks ───────────────────────────────────
+for ed in emacs vim vi nano; do
+  if command -v "$ed" >/dev/null 2>&1; then
+    export EDITOR="$ed" VISUAL="$ed"
+    break
+  fi
+done
+[ "$EDITOR" = emacs ] && export EDITOR='emacs -nw' VISUAL='emacs -nw'
+
+# ── GPG / SSH via gpg-agent ────────────────────────────────────────────────
+export GPG_TTY="${TTY:-$(tty)}"
+if command -v gpgconf >/dev/null 2>&1; then
+  unset SSH_AGENT_PID
+  export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 fi
 
-export GPG_TTY="${TTY:-"$(tty)"}"
-unset SSH_AGENT_PID
-unset SSH_AUTH_SOCK
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-
-export GIT_CURL_VERBOSE=1
-export GIT_TRACE=1
+# ── git prompt hints ───────────────────────────────────────────────────────
 export GIT_PS1_SHOWUPSTREAM="verbose name"
 export GIT_PS1_DESCRIBE_STYLE="branch"
 export GIT_PS1_SHOWCOLORHINTS="true"
 
 export LESSCHARSET=utf-8
 
-export PATH=$PATH:~/.config/emacs/bin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+# Doom emacs bin, if present
+[ -d "$HOME/.config/emacs/bin" ] && export PATH="$PATH:$HOME/.config/emacs/bin"

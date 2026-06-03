@@ -1,12 +1,14 @@
-if [[ -x "/bin/emacs" ]]; then
-    EDITOR="/usr/bin/emacs"
-    FCEDIT="/usr/bin/emacs"
-elif [[ -x "/bin/vim" ]]; then
-    EDITOR="/usr/bin/vim"			# needed for packages like cron
-elif [[ -x "/bin/vi" ]]; then
-    EDITOR="usr/bin/vi"
-elif [[ -x "/bin/nano" ]]; then
-    EDITOR="/usr/bin/nano"			# needed for packages like cron
+#!/bin/bash
+
+# Editor — emacs first, then fallbacks
+for ed in emacs vim vi nano; do
+  if command -v "$ed" >/dev/null 2>&1; then
+    export EDITOR="$ed" VISUAL="$ed" FCEDIT="$ed"
+    break
+  fi
+done
+if [ "$EDITOR" = emacs ]; then
+  export EDITOR='emacs -nw' VISUAL='emacs -nw' FCEDIT='emacs -nw'
 fi
 
 shopt -s checkwinsize
