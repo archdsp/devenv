@@ -55,5 +55,5 @@ sed -i 's/\r//' <file-path>
 ### Claude Code
 * .claude/CLAUDE.md : 전역 작업 규칙 (Anaconda 환경, WIP.md 기록, 브랜치 정책, 커밋 메시지 규칙, 커밋 워크플로 등 모든 프로젝트 공통)
 * .claude/settings.json : Claude Code 사용자 설정
-* .claude/commands/commit.md : `/commit` — 커밋 전 lint → 심층(ultracode) 리뷰 → atomic 커밋 분리 → PR 생성 워크플로
+* .claude/commands/commit.md : `/commit` — 커밋 전 lint → 유닛테스트 → 심층(ultracode) 리뷰 → atomic 커밋 분리 → PR 생성 워크플로
 * 그 외 .claude 하위 디렉터리(projects, sessions, backups, telemetry, worktrees 등)는 런타임/민감 데이터이므로 추적하지 않음
