@@ -94,6 +94,22 @@ if have emacs; then
   done
 else skp "emacs 미설치 (elisp)"; fi
 
+sec "Claude 슬래시 명령 프론트매터"
+if [ -d .claude/commands ]; then
+  found=0
+  for f in .claude/commands/*.md; do
+    [ -f "$f" ] || continue
+    found=1
+    # YAML 프론트매터(--- 로 시작)와 description 키가 있는지 검사
+    if [ "$(head -n 1 "$f")" = "---" ] && grep -q '^description:' "$f"; then
+      ok "frontmatter $f"
+    else
+      nok "frontmatter $f" "YAML 프론트매터(--- 로 시작 + description: 키)가 필요합니다"
+    fi
+  done
+  [ "$found" -eq 0 ] && skp ".claude/commands/*.md 없음"
+else skp ".claude/commands 디렉터리 없음"; fi
+
 printf '\n%s결과:%s %s%d passed%s, %s%d failed%s, %s%d skipped%s\n' \
   "$C_B" "$C_0" "$C_G" "$pass" "$C_0" "$C_R" "$fail" "$C_0" "$C_Y" "$skip" "$C_0"
 
