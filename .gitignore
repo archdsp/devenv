@@ -38,6 +38,8 @@
 !.claude/
 !.claude/CLAUDE.md
 !.claude/settings.json
+!.claude/commands/
+!.claude/commands/*.md
 
 # codex 전역 설정 (비밀/DB/캐시는 추적 안 함)
 !.codex/
